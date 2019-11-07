@@ -15,7 +15,7 @@ namespace dotnet_vmw_api_gateway.Models
         public string Name { get; set; }
 
         [JsonPropertyName("score")]
-        public string Score { get; set; }
+        public int Score { get; set; }
 
     }
 }
