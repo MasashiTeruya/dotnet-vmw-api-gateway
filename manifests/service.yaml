@@ -20,12 +20,12 @@ spec:
   selector:
     matchLabels:
       app: dotnet-vmw-api-gateway
-      deletable: yes
+      deletable: 'yes'
   template:
     metadata:
       labels:
         app: dotnet-vmw-api-gateway
-        deletable: yes
+        deletable: 'yes'
     spec:
       containers:
       - name: dotnet-vmw-api-gateway
