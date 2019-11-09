@@ -33,18 +33,48 @@ namespace dotnet_vmw_api_gateway.Controllers
         [HttpGet]
         public async Task<AggregationStatus> Get()
         {
+            var aggregationStatus = new AggregationStatus()
+            {
+                UserEntries = await this.getUserEntries(),
+                LicenseStatus = await this.getLicenseStatus(),
+            };
+            return aggregationStatus;
+        }
+
+        private async Task<UserEntry[]> getUserEntries()
+        {
             string rankingApiUrl = _configuration.GetValue<string>("API_GATEWAY_RANKING_API_URL");
+            if (string.IsNullOrEmpty(rankingApiUrl))
+            {
+                return new UserEntry[] { };
+            }
             var getUserEntries = _client.GetStringAsync(rankingApiUrl);
-            string licensingStatusUrl = _configuration.GetValue<string>("API_GATEWAY_LICENSING_STATUS_URL");
-            var getLicenseStatus = _client.GetStringAsync(licensingStatusUrl);
             UserEntry[] userEntries = new UserEntry[] { };
             try
             {
                 userEntries = JsonSerializer.Deserialize<UserEntry[]>(await getUserEntries);
+                return userEntries;
             }
             catch (TaskCanceledException)
             {
+                _logger.LogError("Fetching UserEntries timed out.");
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to fetch UserEntries.", ex);
+            }
+            return new UserEntry[] { };
+        }
+
+        private async Task<LicenseStatus> getLicenseStatus()
+        {
+            string licensingStatusUrl = _configuration.GetValue<string>("API_GATEWAY_LICENSING_STATUS_URL");
+            if (string.IsNullOrEmpty(licensingStatusUrl))
+            {
+                return new LicenseStatus() { Enabled = false };
+            }
+            var getLicenseStatus = _client.GetStringAsync(licensingStatusUrl);
+
             LicenseStatus licenseStatus = null;
             try
             {
@@ -52,13 +82,13 @@ namespace dotnet_vmw_api_gateway.Controllers
             }
             catch (TaskCanceledException)
             {
+                _logger.LogError("Fetching LicenseStatus timed out.");
             }
-            var aggregationStatus = new AggregationStatus()
+            catch (Exception ex)
             {
-                UserEntries = userEntries,
-                LicenseStatus = licenseStatus,
-            };
-            return aggregationStatus;
+                _logger.LogError("Failed to fetch LicenseStatus.", ex);
+            }
+            return new LicenseStatus() { Enabled = false };
         }
 
     }
