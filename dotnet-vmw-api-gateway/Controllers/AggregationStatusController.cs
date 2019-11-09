@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 namespace dotnet_vmw_api_gateway.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AggregationStatusController
     {
         private static readonly HttpClient _client;
