@@ -48,12 +48,14 @@ namespace dotnet_vmw_api_gateway.Controllers
             {
                 return new UserEntry[] { };
             }
-            var getUserEntries = _client.GetStringAsync(rankingApiUrl);
-            UserEntry[] userEntries = new UserEntry[] { };
             try
             {
-                userEntries = JsonSerializer.Deserialize<UserEntry[]>(await getUserEntries);
-                return userEntries;
+                string json = await _client.GetStringAsync(rankingApiUrl);
+                if (string.IsNullOrEmpty(json))
+                {
+                    return new UserEntry[] { };
+                }
+                return JsonSerializer.Deserialize<UserEntry[]>(json);
             }
             catch (TaskCanceledException)
             {
@@ -73,12 +75,14 @@ namespace dotnet_vmw_api_gateway.Controllers
             {
                 return new LicenseStatus() { Enabled = false };
             }
-            var getLicenseStatus = _client.GetStringAsync(licensingStatusUrl);
-
-            LicenseStatus licenseStatus = null;
             try
             {
-                licenseStatus = JsonSerializer.Deserialize<LicenseStatus>(await getLicenseStatus);
+                string json = await _client.GetStringAsync(licensingStatusUrl);
+                if (string.IsNullOrEmpty(json))
+                {
+                    return new LicenseStatus() { Enabled = false };
+                }
+                return JsonSerializer.Deserialize<LicenseStatus>(json);
             }
             catch (TaskCanceledException)
             {
