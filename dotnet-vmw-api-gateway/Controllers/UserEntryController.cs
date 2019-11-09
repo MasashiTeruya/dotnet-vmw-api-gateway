@@ -34,15 +34,19 @@ namespace dotnet_vmw_api_gateway.Controllers
         }
 
         [HttpGet]
-        public async Task<UserEntry[]> Get()
+        public async Task<IActionResult> GetUserEntry()
         {
             string url = getUrl();
-            var getUserEntries = _client.GetStringAsync(url);
-            return JsonSerializer.Deserialize<UserEntry[]>(await getUserEntries);
+            string content = await _client.GetStringAsync(url);
+            if (string.IsNullOrEmpty(content))
+            {
+                return NoContent();
+            }
+            return Ok(JsonSerializer.Deserialize<UserEntry[]>(content));
         }
 
         [HttpPost]
-        private async Task postUserEntry(UserEntry userEntry)
+        public async Task PostUserEntry(UserEntry userEntry)
         {
             string url = getUrl();
             string json = JsonSerializer.Serialize<UserEntry>(userEntry);
