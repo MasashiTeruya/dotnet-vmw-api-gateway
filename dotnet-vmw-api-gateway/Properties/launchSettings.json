@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "AggregationStatus",
+      "launchUrl": "api/AggregationStatus",
       "environmentVariables": {
         "API_GATEWAY_LICENSING_STATUS_URL": "http://photon:8081/",
         "API_GATEWAY_RANKING_API_URL": "http://photon:8080/api/user-entries",
