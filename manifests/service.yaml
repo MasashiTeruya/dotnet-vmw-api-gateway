@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-vmw-api-gateway
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: dotnet-vmw-api-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-vmw-api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dotnet-vmw-api-gateway
+      deletable: 'yes'
+  template:
+    metadata:
+      labels:
+        app: dotnet-vmw-api-gateway
+        deletable: 'yes'
+    spec:
+      containers:
+      - name: dotnet-vmw-api-gateway
+        image: 172.100.100.134:80/vvv/dotnet-vmw-api-gateway:TAG
+        ports:
+        - containerPort: 80
+        env:
+        - name: API_GATEWAY_RANKING_API_URL
+          value: http://java-vmw-ranking-api:8080/api/user-entries
+        - name: API_GATEWAY_LICENSING_STATUS_URL
+          value: http://go-vmw-license-status:8081/
